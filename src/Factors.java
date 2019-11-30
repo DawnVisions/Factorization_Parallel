@@ -1,16 +1,22 @@
-import java.io.Console;
 import java.math.BigInteger;
 
 public class Factors {
+    public BigInteger n;
     public BigInteger p;
     public BigInteger q;
     private BigInteger k;
 
-    public Factors(BigInteger p, BigInteger q, BigInteger k)
+    public Factors(BigInteger n)
     {
-        this.p = p;
-        this.q = q;
+        this.n = n;
+    }
+
+    public void setK( BigInteger k)
+    {
         this.k = k;
+        BigInteger square = n.add(k.pow(2));
+        p = square.sqrt().add(k);
+        q = square.sqrt().subtract(k);
     }
 
     public void printOutput()
