@@ -5,6 +5,7 @@ public class Factors {
     public BigInteger p;
     public BigInteger q;
     private BigInteger k;
+    private boolean hasK = false;
 
     public Factors(BigInteger n)
     {
@@ -17,7 +18,10 @@ public class Factors {
         BigInteger square = n.add(k.pow(2));
         p = square.sqrt().add(k);
         q = square.sqrt().subtract(k);
+        hasK = true;
     }
+
+    public boolean hasK() { return hasK; }
 
     public void printOutput()
     {

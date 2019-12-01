@@ -2,12 +2,14 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Testing {
 
     /* define constants */
-    static int numberOfTrials = 10;
-    private static final int MAXBITSIZE = 25;
+    static int numberOfTrials = 20;
+    private static final int MAXBITSIZE = 26;
     public static final int NUM_THREADS = 8;
     static String ResultsFolderPath = "/Users/elizabethwersal/IdeaProjects/Results/"; // pathname to results folder
     static FileWriter resultsFile;
@@ -17,9 +19,9 @@ public class Testing {
 
         // Run the whole experiment at least twice
         // Expect to throw away the data from the earlier runs, before java has fully optimized
-        runFullExperiment("factorizationParallel-Exp1-ThrowAway.txt");
-        //runFullExperiment("factorizationParallel-Exp2.txt");
-        //runFullExperiment("factorizationParallel-Exp3.txt");
+        runFullExperiment("factorizationSeq-Exp1.txt");
+        runFullExperiment("factorizationSeq-Exp2.txt");
+        runFullExperiment("factorizationSeq-Exp3.txt");
     }
 
     private static void runFullExperiment(String resultsFileName) {
@@ -33,15 +35,15 @@ public class Testing {
             return;
         }
 
-        //  Set up stopwatch and doubling ratio
-        ThreadCpuStopWatch TrialStopwatch = new ThreadCpuStopWatch(); // for timing an individual trial
+        //  Set up stopwatch
+        Instant stopwatch;
 
         //  Set up result file headers
         resultsWriter.println("#Bit size of p/q  AverageTime");
         resultsWriter.flush();
 
         //  Trial Variables
-        Fermat_Parallel fermat = new Fermat_Parallel();
+
         BigInteger n;
         BigInteger p;
         BigInteger q;
@@ -65,12 +67,17 @@ public class Testing {
                 System.gc();
                 System.out.println("...done.");
                 System.out.println(p.toString() + " * " + q.toString());
-
+                Fermat_Parallel fermat = new Fermat_Parallel();
                 //Time and run the factorization algorithm
-                TrialStopwatch.start();
-                f = fermat.Fermat_Factorization(n);
-                batchElapsedTime = batchElapsedTime + TrialStopwatch.elapsedTime();
-                //End Time
+                stopwatch = Instant.now();
+                //  Parallel Test
+                //f = fermat.Fermat_Factorization(n);
+
+                //  Sequential Test
+                f = Fermat_Sequential.Fermat_Factorization(n);
+
+                //  End Time
+                batchElapsedTime = batchElapsedTime + Duration.between(stopwatch, Instant.now()).getNano();
 
                 f.printOutput();
             }

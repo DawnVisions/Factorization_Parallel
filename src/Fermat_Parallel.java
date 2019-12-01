@@ -18,25 +18,30 @@ public class Fermat_Parallel {
             object.start();
         }
 
-        for ( int i = 0; i < Testing.NUM_THREADS; i++)
+        while (!factors.hasK())
         {
-            try{
-                threads[i].join();
-            }
-            catch (Exception e) {
-
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+
         return factors;
     }
 
     // Interrupts all threads
-    // Thread can have the handler call this method when it finds the correct factors
-    public void stopThreads() throws InterruptedException
+    // Individual thread can have the handler call this method when it finds the correct factors
+    public void stopThreads()
     {
         for ( int i = 0; i < Testing.NUM_THREADS; i++)
         {
-            threads[i].interrupt();
+            try{
+                threads[i].interrupt();}
+            catch (NullPointerException e) {
+                //Thread already completed before interrupt can be called
+                //Nothing needs to be done
+            }
         }
     }
 }

@@ -17,37 +17,35 @@ public class Fermat_Loop implements Runnable {
         //     and continuing, adding NUM_THREADS each time
         //     With 8 threads: Thread 0 checks 0, 8, 16, ...
         long k = Long.parseLong(t.getName());
-        while(k < Long.parseLong(n.sqrt().toString()))
+        while(k < Long.parseLong(n.sqrt().toString()) && !t.isInterrupted())
         {
             try {
+                // square = N + k^2
                 BigInteger square = n.add(BigInteger.valueOf((long) Math.pow(k, 2)));
-                if (isPerfectSquare(square)) {
+                BigDecimal decimalSquare = new BigDecimal(square.toString());
+                // sqrt ( square)
+                decimalSquare = decimalSquare.sqrt(new MathContext(50));
+                if (t.isInterrupted()) {
+                    return;
+                }
+                // Is square a perfect square?
+                //      If so, set k, p, and q in factors
+                //      stop the other threads
+                if (decimalSquare.scale() <= 0) {
                     factors.setK(BigInteger.valueOf(k));
                     cancellation.stopThreads();
-                    break;
+                    return;
                 }
+                // If not: Next k value to check
                 k += Testing.NUM_THREADS;
             }
             catch (InterruptedException e) {
                 // Break loop if thread receives interrupt from handling class
-                break;
+                return;
             }
         }
     }
 
-    static boolean isPerfectSquare(BigInteger s)
-    {
-        return squareRoot(s).scale() <= 0;
-    }
-
-    public static BigDecimal squareRoot(BigInteger n)
-    {
-        BigDecimal x = new BigDecimal(n.toString());
-        MathContext mc = new MathContext(50);
-        return x.sqrt(mc);
-    }
-
-    //  Class Constructor
     public Fermat_Loop(Factors f, ThreadCancellation stopThreads) {
         this.factors = f;
         cancellation = stopThreads;
