@@ -1,27 +1,27 @@
-import java.io.Console;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 
-public class Factorization {
+public class Fermat_Sequential {
 
     public static Factors Fermat_Factorization(BigInteger n)
     {
+        Factors factors = new Factors(n);
         boolean found = false;
-        BigInteger k = new BigInteger("-1");
-        BigInteger s = new BigInteger("0");
+        BigInteger k = BigInteger.ZERO;
+        BigInteger square;
 
         while (!found)
         {
-            k = k.add(BigInteger.ONE);
-            s = n.add(k.pow(2));
-            if (isPerfectSquare(s))
+            square = n.add(k.pow(2));
+            if (isPerfectSquare(square))
             {
-                s = squareRoot(s).toBigInteger();
                 found = true;
+                factors.setK(k);
             }
+            k = k.add(BigInteger.ONE);
         }
-        return new Factors(s.add(k), s.subtract(k), k );
+        return factors;
     }
 
     static boolean isPerfectSquare(BigInteger s)
@@ -32,7 +32,7 @@ public class Factorization {
     static BigDecimal squareRoot(BigInteger n)
     {
         BigDecimal x = new BigDecimal(n.toString());
-        MathContext mc = new MathContext(100);
+        MathContext mc = new MathContext(50);
         return x.sqrt(mc);
     }
 }
